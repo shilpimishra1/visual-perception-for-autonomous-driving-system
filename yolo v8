@@ -1,0 +1,63 @@
+from google.colab import drive
+drive.mount('/content/drive')
+# Import libraries
+import cv2
+import numpy as np
+from google.colab.patches import cv2_imshow
+from IPython.display import display, Javascript
+from google.colab.output import eval_js
+from base64 import b64decode
+import PIL.Image
+import io
+from ultralytics import YOLO
+
+
+# Function to capture image from webcam
+def take_photo():
+    js = """
+    async function takePhoto() {
+        const video = document.createElement('video');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.body.appendChild(video);
+        video.srcObject = stream;
+        await new Promise((resolve) => video.onloadedmetadata = resolve);
+        video.play();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        stream.getTracks().forEach(track => track.stop());
+        document.body.removeChild(video);
+        return canvas.toDataURL('image/jpeg');
+    }
+    takePhoto();
+    """
+    data = eval_js(js)
+    binary = b64decode(data.split(',')[1])
+    image = PIL.Image.open(io.BytesIO(binary))
+    return np.array(image)
+
+
+# Load YOLOv8 model
+model = YOLO('yolov8n.pt')  # or use yolov8s.pt, yolov8m.pt etc.
+
+
+# Capture an image from the webcam
+frame = take_photo()
+
+
+# Convert image from RGB to BGR (OpenCV format)
+image_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+
+# Perform inference
+results = model(image_bgr)
+
+
+# Visualize results on the original image
+annotated_frame = results[0].plot()
+
+
+# Display annotated image
+cv2_imshow(annotated_frame)
