@@ -23,4 +23,18 @@ The objective of this project is to build a robust visual perception system that
 - ✅ Real-time video frame processing
 - ✅ Designed with road safety as a top priority
 
+## 🛠️ Future Improvements
+
+- Integrate sensor fusion with LiDAR and radar for enhanced perception
+- Add traffic sign recognition using YOLO or EfficientDet
+- Optimize for real-time performance on edge devices (e.g., Raspberry pi)
+- Expand dataset support with more diverse and labeled scenarios.
+
+## 🤝 Contributing
+
+We welcome contributions from the community! 
+💡 Ideas, improvements, and bug fixes are all welcome!
+  
+
+
 
